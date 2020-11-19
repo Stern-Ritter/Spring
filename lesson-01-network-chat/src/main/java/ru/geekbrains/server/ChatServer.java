@@ -1,5 +1,8 @@
 package ru.geekbrains.server;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
 import ru.geekbrains.client.AuthException;
 import ru.geekbrains.client.TextMessage;
 import ru.geekbrains.server.auth.AuthService;
@@ -20,20 +23,15 @@ import static ru.geekbrains.client.MessagePatterns.AUTH_FAIL_RESPONSE;
 import static ru.geekbrains.client.MessagePatterns.AUTH_SUCCESS_RESPONSE;
 
 public class ChatServer {
-
     private AuthService authService;
-    private Map<String, ClientHandler> clientHandlerMap = Collections.synchronizedMap(new HashMap<>());
+    private Map<String, ClientHandler> clientHandlerMap;
 
-    public static void main(String[] args) throws SQLException {
-        ChatServer chatServer = new ChatServer();
-        chatServer.start(7777);
+    public ChatServer(AuthService auth){
+        this.authService = auth;
+        clientHandlerMap = Collections.synchronizedMap(new HashMap<>());
     }
 
-    public ChatServer() throws SQLException {
-        this.authService = new AuthServiceJdbcImpl();
-    }
-
-    private void start(int port) {
+    public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server started!");
             while (true) {
