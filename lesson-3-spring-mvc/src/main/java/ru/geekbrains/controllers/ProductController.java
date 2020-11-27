@@ -37,19 +37,24 @@ public class ProductController {
 
     @GetMapping("/new")
     public String newProduct(Model model) {
-        // TODO дописать добавление аттрибута
+        logger.info("New product added.");
+        Product product = new Product();
+        productRepository.insert(product);
+        model.addAttribute("product", product);
         return "product_form";
     }
 
     @PostMapping("/update")
     public String updateProduct(Product product) {
+        logger.info("Updated product with id {}", product.getId());
         productRepository.update(product);
         return "redirect:/product";
     }
 
-    @GetMapping("/delete")
-    public String deleteProduct(Model model) {
-        // TODO дописать удаление продукта
+    @GetMapping("/delete/{id}")
+    public String deleteProduct(@PathVariable(value = "id") Long id) {
+        logger.info("Delete product with id {}", id);
+        productRepository.delete(id);
         return "redirect:/product";
     }
 }
