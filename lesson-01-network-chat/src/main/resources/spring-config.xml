@@ -7,10 +7,16 @@
   http://www.springframework.org/schema/context
   https://www.springframework.org/schema/context/spring-context.xsd">
 
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="username" value="root"/>
+        <property name="password" value="Erv148"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/network_chat?serverTimezone=Europe/Moscow"/>
+    </bean>
+
     <bean id ="userRepository" class="ru.geekbrains.server.persistance.UserRepository">
-        <constructor-arg type="java.lang.String" index="0" value="jdbc:mysql://localhost:3306/network_chat?serverTimezone=Europe/Moscow"/>
-        <constructor-arg type="java.lang.String" index="1" value="root"/>
-        <constructor-arg type="java.lang.String" index="2" value="Erv148"/>
+        <constructor-arg ref="dataSource"/>
     </bean>
     <bean id ="authService" class="ru.geekbrains.server.auth.AuthServiceJdbcImpl">
         <constructor-arg ref="userRepository"/>

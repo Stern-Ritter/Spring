@@ -9,8 +9,8 @@ public class AuthServiceJdbcImpl implements AuthService {
 
     private final UserRepository userRepository;
 
-    public AuthServiceJdbcImpl() throws SQLException {
-        this.userRepository = new UserRepository();
+    public AuthServiceJdbcImpl(UserRepository ur) throws SQLException {
+        this.userRepository = ur;
         if (userRepository.getAllUsers().size() == 0) {
             userRepository.insert(new User(-1, "ivan", "123"));
             userRepository.insert(new User(-1, "petr", "345"));

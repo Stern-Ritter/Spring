@@ -2,26 +2,31 @@ package ru.geekbrains.server.persistance;
 
 import ru.geekbrains.server.User;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 public class UserRepository {
 
-    private final Connection conn;
+    private final Connection connection;
 
-//    public UserRepository(DataSource dataSource) {
-//        dataSource.getConnection();
-//    }
+    public UserRepository(DriverManagerDataSource dataSource) throws SQLException {
+        this.connection = dataSource.getConnection();
+    }
 
-    public UserRepository() throws SQLException {
-        this.conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/network_chat",
-                "root", "root");
-        createTableIfNotExists(conn);
+    public UserRepository(String url, String username, String password) throws SQLException {
+        this.connection = DriverManager.getConnection(url, username, password);
+        createTableIfNotExists(connection);
     }
 
     public void insert(User user) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement(
+        try (PreparedStatement stmt = connection.prepareStatement(
                 "insert into users(login, password) values (?, ?);")) {
             stmt.setString(1, user.getLogin());
             stmt.setString(2, user.getPassword());
@@ -30,7 +35,7 @@ public class UserRepository {
     }
 
     public User findByLogin(String login) throws SQLException {
-        try (PreparedStatement stmt = conn.prepareStatement(
+        try (PreparedStatement stmt = connection.prepareStatement(
                 "select id, login, password from users where login = ?")) {
             stmt.setString(1, login);
             ResultSet rs = stmt.executeQuery();
@@ -44,7 +49,7 @@ public class UserRepository {
 
     public List<User> getAllUsers() throws SQLException {
         List<User> res = new ArrayList<>();
-        try (Statement stmt = conn.createStatement()) {
+        try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery("select id, login, password from users");
 
             while (rs.next()) {
