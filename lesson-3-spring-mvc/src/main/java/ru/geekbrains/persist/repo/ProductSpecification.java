@@ -10,7 +10,7 @@ public class ProductSpecification {
     public static Specification<Product> nameLike(String name) {
         return (root, query, builder) -> builder.like(root.get("name"), "%" + name + "%");
     }
-    /*
+
     public static Specification<Product> minPrice(BigDecimal minPrice){
         return (root, query, builder) -> builder.gt(root.get("price"), minPrice);
     }
@@ -18,5 +18,4 @@ public class ProductSpecification {
     public static Specification<Product> maxPrice(BigDecimal maxPrice){
         return (root, query, builder) -> builder.lt(root.get("price"), maxPrice);
     }
-    TODO добавить спецификации для условий согласно ДЗ */
 }

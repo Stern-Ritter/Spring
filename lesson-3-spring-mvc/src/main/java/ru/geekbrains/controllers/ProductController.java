@@ -33,14 +33,12 @@ public class ProductController {
         if (nameFilter != null && !nameFilter.isEmpty()) {
             spec = spec.and(ProductSpecification.nameLike(nameFilter));
         }
-        /*
         if (minPrice != null) {
             spec = spec.and(ProductSpecification.minPrice(minPrice));
         }
         if (maxPrice != null ) {
             spec = spec.and(ProductSpecification.maxPrice(maxPrice));
         }
-        TODO добавить обработку параметров формы */
 
         model.addAttribute("products", productRepository.findAll(spec));
         return "product";
