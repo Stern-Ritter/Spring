@@ -41,15 +41,18 @@
         <form class="form-inline mt-3" method="get">
             <div class="form-group mx-sm-3 mb-2">
                 <label for="name-filter" class="sr-only">Name filter:</label>
-                <input th:value="${param.nameFilter}" type="text" class="form-control" name="nameFilter" id="name-filter" placeholder="Name filter">
+                <input th:value="${param.nameFilter}" type="text" class="form-control" name="nameFilter"
+                       id="name-filter" placeholder="Name filter">
             </div>
             <div class="form-group mx-sm-3 mb-2">
-                <label for="min-price" class="sr-only">Minimum price:</label>
-                <input th:value="${param.minPrice}" type="text" class="form-control" name="minPrice" id="min-price" placeholder="Minimum price">
+                <label for="min-filter" class="sr-only">Minimum price:</label>
+                <input th:value="${param.minPrice}" type="text" class="form-control" name="minPrice"
+                       id="min-filter" placeholder="Minimum price">
             </div>
             <div class="form-group mx-sm-3 mb-2">
-                <label for="max-price" class="sr-only">Maximum price:</label>
-                <input th:value="${param.maxPrice}" type="text" class="form-control" name="maxPrice" id="max-price" placeholder="Maximum price">
+                <label for="max-filter" class="sr-only">Maximum price:</label>
+                <input th:value="${param.maxPrice}" type="text" class="form-control" name="maxPrice"
+                       id="max-filter" placeholder="Maximum price">
             </div>
             <button type="submit" class="btn btn-primary mb-2">Apply</button>
         </form>

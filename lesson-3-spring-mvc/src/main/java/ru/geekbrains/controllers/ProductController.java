@@ -3,15 +3,16 @@ package ru.geekbrains.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import ru.geekbrains.persist.entity.Product;
-import ru.geekbrains.persist.repo.ProductRepository;
-import ru.geekbrains.persist.repo.ProductSpecification;
+import ru.geekbrains.service.ProductService;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/product")
@@ -20,34 +21,22 @@ public class ProductController {
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
 
     @GetMapping
-    public String indexProductPage(Model model, @RequestParam(name = "nameFilter", required = false) String nameFilter,
-                                   @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
-                                   @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice) {
+    public String indexProductPage(Model model,
+                                   @RequestParam(name = "nameFilter") Optional<String> nameFilter,
+                                   @RequestParam(name = "minPrice") Optional<BigDecimal> minPrice,
+                                   @RequestParam(name = "maxPrice") Optional<BigDecimal> maxPrice) {
         logger.info("Product page update");
-
-        Specification<Product> spec = Specification.where(null);
-
-        if (nameFilter != null && !nameFilter.isEmpty()) {
-            spec = spec.and(ProductSpecification.nameLike(nameFilter));
-        }
-        if (minPrice != null) {
-            spec = spec.and(ProductSpecification.minPrice(minPrice));
-        }
-        if (maxPrice != null ) {
-            spec = spec.and(ProductSpecification.maxPrice(maxPrice));
-        }
-
-        model.addAttribute("products", productRepository.findAll(spec));
+        model.addAttribute("products", productService.findWithFilter(nameFilter, minPrice, maxPrice));
         return "product";
     }
 
     @GetMapping("/{id}")
     public String editProduct(@PathVariable(value = "id") Long id, Model model) {
         logger.info("Edit product with id {}", id);
-        model.addAttribute("product", productRepository.findById(id));
+        model.addAttribute("product", productService.findById(id).orElseThrow(() -> new NotFoundException()));
         return "product_form";
     }
 
@@ -59,14 +48,21 @@ public class ProductController {
 
     @PostMapping("/update")
     public String updateProduct(Product product) {
-        productRepository.save(product);
+        productService.save(product);
         return "redirect:/product";
     }
 
     @DeleteMapping("/{id}")
     public String deleteProduct(@PathVariable(value = "id") Long id) {
         logger.info("Delete product with id {}", id);
-        productRepository.deleteById(id);
+        productService.deleteById(id);
         return "redirect:/product";
+    }
+
+    @ExceptionHandler
+    public ModelAndView notFoundExceptionHandler(NotFoundException ex) {
+        ModelAndView modelAndView = new ModelAndView("not_found");
+        modelAndView.setStatus(HttpStatus.NOT_FOUND);
+        return modelAndView;
     }
 }
