@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.geekbrains.persist.entity.Product;
 import ru.geekbrains.service.ProductService;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class ProductController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+    private static final int INITIAL_PAGE_SIZE = 5;
 
     @Autowired
     private ProductService productService;
@@ -27,9 +30,17 @@ public class ProductController {
     public String indexProductPage(Model model,
                                    @RequestParam(name = "nameFilter") Optional<String> nameFilter,
                                    @RequestParam(name = "minPrice") Optional<BigDecimal> minPrice,
-                                   @RequestParam(name = "maxPrice") Optional<BigDecimal> maxPrice) {
+                                   @RequestParam(name = "maxPrice") Optional<BigDecimal> maxPrice,
+                                   @RequestParam(name = "page") Optional<Integer> page,
+                                   @RequestParam(name = "size") Optional<Integer> size,
+                                   @RequestParam(name = "sortField") Optional<String> sortField) {
         logger.info("Product page update");
-        model.addAttribute("products", productService.findWithFilter(nameFilter, minPrice, maxPrice));
+        int evalPageSize = size.orElse(INITIAL_PAGE_SIZE);
+        String sortValue = sortField.orElse("id");
+        model.addAttribute("selectedPageSize", evalPageSize);
+        model.addAttribute("sortValue", sortValue);
+        model.addAttribute("products", productService.findWithFilter(nameFilter, minPrice, maxPrice, page, evalPageSize,
+                sortValue));
         return "product";
     }
 
@@ -47,7 +58,10 @@ public class ProductController {
     }
 
     @PostMapping("/update")
-    public String updateProduct(Product product) {
+    public String updateProduct(@Valid Product product, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            return "product_form";
+        }
         productService.save(product);
         return "redirect:/product";
     }

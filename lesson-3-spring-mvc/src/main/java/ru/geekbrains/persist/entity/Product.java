@@ -1,6 +1,8 @@
 package ru.geekbrains.persist.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Entity
@@ -9,15 +11,18 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column
+    @NotBlank(message = "Имя должно быть заполнено.")
+    @Column(name = "name")
     private String name;
 
-    @Column
+    @Column(name = "description")
     private String description;
 
-    @Column
+    @NotNull(message =  "Цена должна быть заполнена.")
+    @Column(name = "price")
     private BigDecimal price;
 
     public Product() {

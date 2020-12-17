@@ -1,5 +1,6 @@
 package ru.geekbrains.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import ru.geekbrains.persist.entity.Product;
 
@@ -9,7 +10,8 @@ import java.util.Optional;
 
 public interface ProductService {
 
-    List<Product> findWithFilter(Optional<String> nameFilter, Optional<BigDecimal> minPrice, Optional<BigDecimal> maxPrice);
+    Page<Product> findWithFilter(Optional<String> nameFilter, Optional<BigDecimal> minPrice, Optional<BigDecimal> maxPrice,
+                                 Optional<Integer> page, Integer size, String sortField);
 
     List<Product> findAll(Specification<Product> spec);
 

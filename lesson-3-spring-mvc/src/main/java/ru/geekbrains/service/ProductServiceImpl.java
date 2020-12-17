@@ -1,6 +1,9 @@
 package ru.geekbrains.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +26,12 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<Product> findWithFilter(Optional<String> nameFilter,
+    public Page<Product> findWithFilter(Optional<String> nameFilter,
                                         Optional<BigDecimal> minPrice,
-                                        Optional<BigDecimal> maxPrice) {
+                                        Optional<BigDecimal> maxPrice,
+                                        Optional<Integer> page,
+                                        Integer size,
+                                        String sortField) {
 
         Specification<Product> spec = Specification.where(null);
 
@@ -38,8 +44,8 @@ public class ProductServiceImpl implements ProductService{
         if (maxPrice.isPresent() ) {
             spec = spec.and(ProductSpecification.maxPrice(maxPrice.get()));
         }
-
-        return productRepository.findAll(spec);
+        Sort sort = Sort.by(sortField).ascending();
+        return productRepository.findAll(spec, PageRequest.of(page.orElse(1) - 1, size, sort));
     }
 
     @Override
