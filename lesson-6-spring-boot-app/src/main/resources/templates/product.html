@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head"/>
+
+<body>
+<nav th:replace="fragments/head :: navbar"/>
+
+<div class="container">
+    <div class="row py-2">
+        <div class="col-12">
+            <a class="btn btn-primary" th:href="@{/product/new}">Add Product</a>
+        </div>
+
+        <form class="form-inline mt-3" method="get">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="name-filter" class="sr-only">Name filter:</label>
+                <input th:value="${param.nameFilter}" type="text" class="form-control" name="nameFilter"
+                       id="name-filter" placeholder="Name filter">
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="min-filter" class="sr-only">Minimum price:</label>
+                <input th:value="${param.minPrice}" type="text" class="form-control" name="minPrice"
+                       id="min-filter" placeholder="Minimum price">
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="max-filter" class="sr-only">Maximum price:</label>
+                <input th:value="${param.maxPrice}" type="text" class="form-control" name="maxPrice"
+                       id="max-filter" placeholder="Maximum price">
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Apply</button>
+        </form>
+
+        <div class="col-12">
+            <table class="table table-bordered my-2">
+                <thead>
+                <tr>
+                    <th>Id
+                        <a th:href="@{/product(page=${products.number + 1}, size=${selectedPageSize},
+                        nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice},maxPrice = ${param.maxPrice},
+                        sortField='id', sortOrder='ASC')}">
+                            <i class="fa fa-sort-up"></i>
+                        </a>
+                        <a th:href="@{/product(page=${products.number + 1}, size=${selectedPageSize},
+                     nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice},maxPrice = ${param.maxPrice},
+                     sortField='id', sortOrder='DESC')}">
+                            <i class="fa fa-sort-down"></i></a>
+                    </th>
+                    <th>Name <a th:href="@{/product(page=${products.number + 1}, size=${selectedPageSize},
+                     nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice},maxPrice = ${param.maxPrice},
+                     sortField='name', sortOrder='ASC')}">
+                        <i class="fa fa-sort-up"></i>
+                    </a>
+                        <a th:href="@{/product(page=${products.number + 1}, size=${selectedPageSize},
+                     nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice},maxPrice = ${param.maxPrice},
+                     sortField='name', sortOrder='DESC')}">
+                            <i class="fa fa-sort-down"></i></a>
+                    </th>
+                    <th>Description <a th:href="@{/product(page=${products.number + 1}, size=${selectedPageSize},
+                     nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice},maxPrice = ${param.maxPrice},
+                     sortField='description', sortOrder='ASC')}">
+                        <i class="fa fa-sort-up"></i>
+                    </a>
+                        <a th:href="@{/product(page=${products.number + 1}, size=${selectedPageSize},
+                     nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice},maxPrice = ${param.maxPrice},
+                     sortField='description', sortOrder='DESC')}">
+                            <i class="fa fa-sort-down"></i></a>
+                    </th>
+                    <th>Price <a th:href="@{/product(page=${products.number + 1}, size=${selectedPageSize},
+                     nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice}, maxPrice = ${param.maxPrice},
+                     sortField='price', sortOrder='ASC')}">
+                        <i class="fa fa-sort-up"></i>
+                    </a>
+                        <a th:href="@{/product(page=${products.number + 1}, size=${selectedPageSize},
+                     nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice},maxPrice = ${param.maxPrice},
+                     sortField='price', sortOrder='DESC')}">
+                            <i class="fa fa-sort-down"></i></a>
+                    </th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${products.hasContent()}" th:each="product : ${products.content}">
+                    <th scope="row" th:text="${product.id}">1</th>
+                    <td th:text="${product.name}">MacBook Air 13" CZ</td>
+                    <td th:text="${product.description}">MacBook - Intel Core i5 5350U Broadwell, 13" TN lesklý 1440 ×
+                        900, RAM 8GB DDR3
+                    </td>
+                    <td th:text="${product.price}">$1000</td>
+                    <td>
+                        <a class="btn btn-success" th:href="@{/product/{id}(id = ${product.id})}">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form class="d-inline" th:method="delete" th:action="@{/product/{id}(id = ${product.id})}">
+                            <button type="submit" class="btn btn-danger"><i class="far fa-trash-alt"></i></button>
+                        </form>
+                    </td>
+                </tr>
+
+                <tr th:unless="${products.hasContent()}">
+                    <td colspan="5">No data</td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div th:if="${products.hasContent()}" class="col-12-inline">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li th:classappend="${products.hasPrevious()} ? '' : 'disabled'"
+                        class="page-item">
+                        <a class="page-link"
+                           th:href="@{/product(page=${products.number}, size=${selectedPageSize},
+                       nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice}, maxPrice = ${param.maxPrice},
+                       sortField=${sortValue}, sortOrder=${sortDirection})}">Previous</a>
+                    </li>
+
+                    <li th:each="num: ${#numbers.sequence(1, products.totalPages)}"
+                        th:classappend="${num == products.number + 1} ? 'active'"
+                        class="page-item">
+                        <a class="page-link" th:href="@{/product(page=${num}, size=${selectedPageSize},
+                     nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice}, maxPrice = ${param.maxPrice},
+                     sortField=${sortValue}, sortOrder=${sortDirection})}">[[${num}]]</a>
+                    </li>
+
+                    <li th:classappend="${products.hasNext()} ? '' : 'disabled'"
+                        class="page-item">
+                        <a class="page-link"
+                           th:href="@{/product(page=${products.number + 2}, size=${selectedPageSize},
+                       nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice}, maxPrice = ${param.maxPrice},
+                       sortField=${sortValue}, sortOrder=${sortDirection})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div th:if="${products.hasContent()}">
+            <ul class="list-inline">
+                <span>Products on one page:</span>
+                <li class="list-inline-item">
+                    <a class="page-link"
+                       th:href="@{/product(page=1, size=5, nameFilter = ${param.nameFilter}, minPrice = ${param.minPrice},
+                       maxPrice = ${param.maxPrice}, sortField=${sortValue}, sortOrder=${sortDirection})}">5</a></li>
+                <li class="list-inline-item">
+                    <a class="page-link"
+                       th:href="@{/product(page=1, size=10, nameFilter = ${param.nameFilter},
+                       minPrice = ${param.minPrice},maxPrice = ${param.maxPrice}, sortField=${sortValue},
+                       sortOrder=${sortDirection})}">10</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script th:replace="fragments/footer.html :: scipts"/>
+
+</body>
+</html>
