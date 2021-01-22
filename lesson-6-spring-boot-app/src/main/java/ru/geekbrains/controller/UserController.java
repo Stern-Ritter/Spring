@@ -4,10 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import ru.geekbrains.NotFoundException;
 import ru.geekbrains.persist.entity.User;
@@ -48,12 +54,14 @@ public class UserController {
         return "user_form";
     }
 
+    @Secured({"ROLE_SUPER_ADMIN"})
     @GetMapping("/new")
     public String newUser(Model model) {
         model.addAttribute(new User());
         return "user_form";
     }
 
+    @Secured({"ROLE_SUPER_ADMIN"})
     @PostMapping("/update")
     public String updateUser(@Valid User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -63,6 +71,7 @@ public class UserController {
         return "redirect:/user";
     }
 
+    @Secured({"ROLE_SUPER_ADMIN"})
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable(value = "id") Long id) {
         logger.info("Delete user with id {}", id);

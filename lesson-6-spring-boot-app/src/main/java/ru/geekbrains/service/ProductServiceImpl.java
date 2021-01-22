@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.geekbrains.persist.entity.Product;
@@ -39,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
                                         Optional<String> sortField,
                                         Optional<String> sortOrder) {
         Specification<Product> spec = Specification.where(null);
-        if (nameFilter.isPresent() && !nameFilter.get().isBlank()) {
+        if (nameFilter.isPresent() && !nameFilter.get().isEmpty()) {
             logger.info("Adding {} to filter", nameFilter.get());
             spec = spec.and(ProductSpecification.nameLike(nameFilter.get()));
         }

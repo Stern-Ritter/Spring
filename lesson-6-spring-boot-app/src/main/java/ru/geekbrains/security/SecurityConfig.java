@@ -64,13 +64,14 @@ public class SecurityConfig {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .authorizeRequests()
-                    .antMatchers("/*.css", "/*.js").anonymous()
-                    .antMatchers("/user/**").hasRole("ADMIN")
-                    .anyRequest().authenticated() // .anonymous() для неавторизованного доступа
+            http.authorizeRequests()
+                    .antMatchers("/*.css", "/*.js").permitAll()
+                    .antMatchers("/product/**").hasAnyRole("MANAGER", "ADMIN")
+                    .antMatchers("/user/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                    .anyRequest().permitAll()
                     .and()
-                    .formLogin();
+                    .formLogin()
+                    .loginPage("/login");
         }
     }
 }
